@@ -30,7 +30,7 @@ services:
       UPLOAD_DIR: /uploads
       ACCESS_PIN: ${ACCESS_PIN:-7731}
       SESSION_TIMEOUT_MINUTES: "60"
-      MAX_FILE_SIZE_GB: "10"
+      MAX_FILE_SIZE_GB: "100"
       MAX_FILES_PER_BATCH: "50"
     volumes:
       - uploads:/uploads
