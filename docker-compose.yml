@@ -1,0 +1,47 @@
+version: "3.8"
+
+# ================================================================
+#  TESLA NAS UPLOAD
+#  Build images from source, mount NAS folder for storage
+#
+#  Set ACCESS_PIN and UPLOAD_PATH via environment or .env file
+# ================================================================
+
+volumes:
+  uploads:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${UPLOAD_PATH:-/volume1/docker/Tesla}
+
+services:
+
+  backend:
+    build:
+      context: ./backend
+    image: tesla-upload-backend:latest
+    container_name: tesla-upload-backend
+    restart: unless-stopped
+    expose:
+      - "4000"
+    environment:
+      PORT: "4000"
+      UPLOAD_DIR: /uploads
+      ACCESS_PIN: ${ACCESS_PIN:-7731}
+      SESSION_TIMEOUT_MINUTES: "60"
+      MAX_FILE_SIZE_GB: "10"
+      MAX_FILES_PER_BATCH: "50"
+    volumes:
+      - uploads:/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+    image: tesla-upload-frontend:latest
+    container_name: tesla-upload-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      - backend
